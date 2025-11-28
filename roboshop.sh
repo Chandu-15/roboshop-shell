@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 AMI_ID="ami-09c813fb71547fc4f"
 SG_ID="sg-0c2d09e696b53ec3b"
 ZONE_ID="Z03033682NZTF71TBCJ61"
