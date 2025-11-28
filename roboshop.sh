@@ -3,9 +3,10 @@ AMI_ID="ami-09c813fb71547fc4f"
 SG_ID="sg-0c2d09e696b53ec3b"
 ZONE_ID="Z03033682NZTF71TBCJ61"
 DOMAIN_NAME="daws-86.shop"
-for INSTANCE in $@;
+for INSTANCE in "$@";
 do
    INSTANCE_ID=$(aws ec2 run-instances --image-id $AMI_ID --instance-type t3.micro --security-group-ids $SG_ID --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$INSTANCE}]" --query 'Instances[0].InstanceId' --output text)
+   aws ec2 wait instance-running --instance-ids $INSTANCE_ID
    if [ $INSTANCE != "Frontend" ]; then
      IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text)
      RECORD_NAME=$INSTANCE.$DOMAIN_NAME
