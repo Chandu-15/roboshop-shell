@@ -5,20 +5,20 @@ SG_ID="sg-0c2d09e696b53ec3b"
 ZONE_ID="Z03033682NZTF71TBCJ61"
 DOMAIN_NAME="daws-86.shop"
 for INSTANCE in "$@";
-do
-   INSTANCE_ID=$(aws ec2 run-instances --image-id $AMI_ID --instance-type t3.micro --security-group-ids $SG_ID --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$INSTANCE}]" --query 'Instances[0].InstanceId' --output text)
-   aws ec2 wait instance-running --instance-ids $INSTANCE_ID
+do 
+    INSTANCE_ID=$(/usr/local/bin/aws ec2 run-instances --image-id $AMI_ID --instance-type t3.micro --security-group-ids $SG_ID --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$INSTANCE}]" --query 'Instances[0].InstanceId' --output text)
+   /usr/local/bin/aws ec2 wait instance-running --instance-ids $INSTANCE_ID
    if [ $INSTANCE != "Frontend" ]; then
-     IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text)
+     IP=$(/usr/local/bin/aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text)
      RECORD_NAME=$INSTANCE.$DOMAIN_NAME
     else
-     IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+     IP=$(/usr/local/bin/aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
      RECORD_NAME=$DOMAIN_NAME
     fi
 
     echo "$INSTANCE: $IP"
 
-    aws route53 change-resource-record-sets \
+    /usr/local/bin/aws route53 change-resource-record-sets \
     --hosted-zone-id $ZONE_ID \
     --change-batch '
     {
