@@ -7,7 +7,7 @@ Environment=MONGO=true
 // highlight-start
 Environment=MONGO_URL="mongodb://mongodb.daws-86.shop/catalogue"
 // highlight-end
-ExecStart=/bin/node /root/app/server.js
+ExecStart=/bin/node /app/server.js
 SyslogIdentifier=catalogue
 
 [Install]
