@@ -1,0 +1,14 @@
+[Unit]
+Description = Catalogue Service
+
+[Service]
+User=roboshop
+Environment=MONGO=true
+// highlight-start
+Environment=MONGO_URL="mongodb://mongodb.daws-86.shop/catalogue"
+// highlight-end
+ExecStart=/bin/node /root/app/server.js
+SyslogIdentifier=catalogue
+
+[Install]
+WantedBy=multi-user.target

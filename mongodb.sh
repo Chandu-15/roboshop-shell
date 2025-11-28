@@ -14,7 +14,7 @@ echo "Script execution started at: $(date)" | tee -a $LOG_FILE
 
 #check whether script is running under root access or not
 if [ $USER_ID -ne 0 ]; then
-   echo -e " $R ERROR:Please execute the script under root access $N" | tee -a $$LOG_FILE
+   echo -e " $R ERROR:Please execute the script under root access $N" | tee -a $LOG_FILE
    exit 1 # we are manually forcing to exit from execution if any error occured
 fi
 #creating function for  validation once package installed 
@@ -29,14 +29,19 @@ fi
 cp mongo.repo /etc/yum.repos.d/
 VALIDATE $? "Coping mongo.repo"
 
-dnf install mongo-org -y
+dnf install mongodb-org -y & >>$LOG_FILE
 VALIDATE $? "Installing Mongodb"
 
-systemctl enable mongod
+systemctl enable mongod & >>$LOG_FILE
 VALIDATE $? "Enabling mongodb"
 
-systemctl start mongod
+systemctl start mongod & >>$LOG_FILE
 VALIDATE $? "Start mongodb"
 
-SED '
+SED -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf 
+VALIDATE $? "editing mongodb configuration for remote connections"
+
+systemctl restart mongod &>>$LOG_FILE
+VALIDATE $? "Restarting mongodb services"
+
 
